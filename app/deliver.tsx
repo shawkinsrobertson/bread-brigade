@@ -18,6 +18,7 @@ function InsetFrame() {
 
 export default function DeliverScreen() {
   const { delivery, error: fetchError, startDelivery, updateStatus, pushLocation } = useDelivery();
+  const [driverName, setDriverName] = useState('');
   const [itemsText, setItemsText] = useState('');
   const [etaText, setEtaText] = useState('15');
   const [submitting, setSubmitting] = useState(false);
@@ -48,6 +49,7 @@ export default function DeliverScreen() {
   }
 
   async function handleStart() {
+    const name = driverName.trim() || 'Baker';
     const trimmed = itemsText.trim();
     const eta = Math.max(1, parseInt(etaText, 10) || 15);
     if (!trimmed) {
@@ -56,7 +58,7 @@ export default function DeliverScreen() {
     }
     setSubmitting(true);
     try {
-      await startDelivery(trimmed, eta);
+      await startDelivery(name, trimmed, eta);
       await startBroadcast();
     } catch {
       Alert.alert('Error', 'Could not start delivery. Check your connection.');
@@ -73,6 +75,7 @@ export default function DeliverScreen() {
 
   async function handleReset() {
     stopBroadcast();
+    setDriverName('');
     setItemsText('');
     setEtaText('15');
     try { await updateStatus('idle'); }
@@ -132,6 +135,16 @@ export default function DeliverScreen() {
         </View>
         <Text style={styles.cardTitle}>Today's Delivery</Text>
         <Text style={styles.cardSub}>Enter what you're bringing, then go.</Text>
+
+        <Text style={styles.fieldLabel}>YOUR NAME</Text>
+        <TextInput
+          style={[styles.input, styles.inputShort]}
+          placeholder="e.g. Dad, Seamus"
+          placeholderTextColor={colors.muted}
+          value={driverName}
+          onChangeText={setDriverName}
+          autoCapitalize="words"
+        />
 
         <Text style={styles.fieldLabel}>WHAT ARE YOU DELIVERING?</Text>
         <TextInput

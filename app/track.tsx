@@ -213,7 +213,7 @@ export default function TrackScreen() {
 
           {/* Who + items */}
           <View style={styles.who}>
-            <Text style={styles.whoName}>Dad's on the way</Text>
+            <Text style={styles.whoName}>{delivery.driver_name}'s on the way</Text>
             <Text style={styles.whoItems} numberOfLines={1}>
               {delivery.items.toUpperCase()}
             </Text>

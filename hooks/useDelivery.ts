@@ -27,10 +27,11 @@ export function useDelivery() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  async function startDelivery(items: string, etaMinutes: number) {
+  async function startDelivery(driverName: string, items: string, etaMinutes: number) {
     const { data, error: err } = await supabase
       .from('delivery')
       .update({
+        driver_name: driverName,
         items,
         status: 'on-the-way',
         eta_minutes: etaMinutes,
@@ -48,7 +49,7 @@ export function useDelivery() {
     const patch: Partial<DeliveryRow> = { status };
     if (status === 'delivered') patch.delivered_at = new Date().toISOString();
     if (status === 'idle') {
-      Object.assign(patch, { items: '', started_at: null, delivered_at: null, eta_minutes: 15 });
+      Object.assign(patch, { driver_name: '', items: '', started_at: null, delivered_at: null, eta_minutes: 15 });
     }
     const { data, error: err } = await supabase
       .from('delivery')

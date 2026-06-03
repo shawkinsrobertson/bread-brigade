@@ -16,6 +16,7 @@ export interface LocationRow {
 
 export interface DeliveryRow {
   id: number;
+  driver_name: string;
   items: string;
   status: DeliveryStatus;
   eta_minutes: number;
