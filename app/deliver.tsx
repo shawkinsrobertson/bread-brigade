@@ -1,11 +1,14 @@
 import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, Alert, ActivityIndicator, Platform,
+  StyleSheet, Alert, ActivityIndicator, Platform, Image,
 } from 'react-native';
 import * as ExpoLocation from 'expo-location';
 import { useDelivery } from '../hooks/useDelivery';
 import { colors, fonts, shadow } from '../constants/tokens';
+
+let breadLogo: any;
+try { breadLogo = require('../assets/bread-logo.png'); } catch { breadLogo = null; }
 
 function InsetFrame() {
   return (
@@ -88,7 +91,10 @@ export default function DeliverScreen() {
       <View style={styles.container}>
         <View style={[styles.card, shadow.card]}>
           <InsetFrame />
-          <Text style={styles.bigEmoji}>🎉</Text>
+          {breadLogo
+            ? <Image source={breadLogo} style={styles.deliveredLogo} />
+            : <Text style={styles.bigEmoji}>🎉</Text>
+          }
           <Text style={styles.cardTitle}>Delivered!</Text>
           <Text style={styles.cardSub}>{delivery?.items}</Text>
           <TouchableOpacity style={[styles.btn, styles.btnGreen]} onPress={handleReset}>
@@ -200,6 +206,7 @@ const styles = StyleSheet.create({
   ruleText:  { fontFamily: fonts.ui, fontSize: 8, letterSpacing: 3, color: colors.terra, fontWeight: '600' },
 
   bigEmoji:  { fontSize: 54, textAlign: 'center', marginBottom: 12 },
+  deliveredLogo: { width: 110, height: 110, borderRadius: 55, alignSelf: 'center', marginBottom: 16 },
   cardTitle: { fontFamily: fonts.display, fontSize: 22, color: colors.green, textAlign: 'center', marginBottom: 6 },
   cardSub:   { fontFamily: fonts.ui, fontSize: 14, color: colors.muted, textAlign: 'center', marginBottom: 20, lineHeight: 20 },
 

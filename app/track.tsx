@@ -116,7 +116,10 @@ function IdleScreen() {
 function DeliveredScreen({ items }: { items: string }) {
   return (
     <View style={[styles.container, { backgroundColor: colors.paper, justifyContent: 'center', alignItems: 'center', padding: 32 }]}>
-      <Text style={styles.idleEmoji}>🎉</Text>
+      {breadLogo
+        ? <Image source={breadLogo} style={styles.deliveredLogo} />
+        : <Text style={styles.idleEmoji}>🎉</Text>
+      }
       <Text style={styles.deliveredTitle}>Your bread has arrived!</Text>
       {!!items && <Text style={styles.deliveredItems}>{items}</Text>}
     </View>
@@ -213,7 +216,7 @@ export default function TrackScreen() {
 
           {/* Who + items */}
           <View style={styles.who}>
-            <Text style={styles.whoName}>{delivery.driver_name}'s on the way</Text>
+            <Text style={styles.whoName}>{delivery.driver_name} is on the way</Text>
             <Text style={styles.whoItems} numberOfLines={1}>
               {delivery.items.toUpperCase()}
             </Text>
@@ -313,6 +316,7 @@ const styles = StyleSheet.create({
   idleEmoji:      { fontSize: 64, textAlign: 'center', marginBottom: 16 },
   idleTitle:      { fontFamily: fonts.display, fontSize: 24, color: colors.green, textAlign: 'center', marginBottom: 8 },
   idleSub:        { fontFamily: fonts.ui, fontSize: 15, color: colors.muted, textAlign: 'center', lineHeight: 22 },
+  deliveredLogo:  { width: 110, height: 110, borderRadius: 55, alignSelf: 'center', marginBottom: 20 },
   deliveredTitle: { fontFamily: fonts.display, fontSize: 26, color: colors.green, textAlign: 'center', marginBottom: 10 },
   deliveredItems: { fontFamily: fonts.ui, fontSize: 16, color: colors.terra, textAlign: 'center', letterSpacing: 1 },
 });
