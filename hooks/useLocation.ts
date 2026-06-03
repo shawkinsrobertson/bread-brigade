@@ -1,35 +1,29 @@
-import { useState, useEffect, useRef } from 'react';
-import { API_BASE } from '../constants/api';
+import { useState, useEffect } from 'react';
+import { supabase, type LocationRow } from '../lib/supabase';
 
-interface LocationData {
-  latitude: number;
-  longitude: number;
-  updated_at: string;
-}
-
-export function useLocation(pollMs = 5000) {
-  const [location, setLocation] = useState<LocationData | null>(null);
+export function useLocation() {
+  const [location, setLocation] = useState<LocationRow | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  async function fetchLocation() {
-    try {
-      const res = await fetch(`${API_BASE}/api/location`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setLocation(await res.json());
-      setError(null);
-    } catch (e) {
-      setError('Could not reach server');
-    }
-  }
 
   useEffect(() => {
-    fetchLocation();
-    timerRef.current = setInterval(fetchLocation, pollMs);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [pollMs]);
+    supabase
+      .from('location')
+      .select('*')
+      .eq('id', 1)
+      .single()
+      .then(({ data, error: err }) => {
+        if (err) setError('Could not reach server');
+        else setLocation(data);
+      });
+
+    const channel = supabase
+      .channel('location-live')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'location' },
+        (payload) => setLocation(payload.new as LocationRow))
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   return { location, error };
 }
